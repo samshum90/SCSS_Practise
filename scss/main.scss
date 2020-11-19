@@ -1,4 +1,37 @@
-@import "partials/variables", "partials/mixins";
+@import "partials/functions", "partials/variables", "partials/mixins";
+
+@for $i from 1 through 6 {
+  .col-#{$i} {
+    width: $i * 2em;
+  }
+}
+
+$speakers: bob-banker, patty-plume, sandra-smith;
+@each $speaker in $speakers {
+  .#{$speaker}-profile {
+    background-image: url("/img/#{$speaker}.png");
+  }
+}
+
+$font-sizes: (
+  tiny: 8px,
+  small: 11px,
+  medium: 13px,
+  large: 18px,
+);
+@each $name, $size in $font-sizes {
+  .#{$name} {
+    font-size: $size;
+  }
+}
+
+$j: 2;
+@while $j <= 4 {
+  .picture-#{$j} {
+    width: $j * 10%;
+  }
+  $j: $j + 2;
+}
 
 @include google-font("Alegreya+Sans");
 @include google-font("Titillium+Web");
@@ -10,9 +43,33 @@
 // applied to whole file
 @include fancy-links;
 
+.error {
+  color: red;
+}
+
+.critical-error {
+  @extend .error;
+  bottom: 1px solid red;
+  font-weight: bold;
+}
+$contrast: high;
+
 body {
-  font-family: sans-serif;
+  font-family: $text-font;
+  @if $contrast == high {
+    color: #000;
+  } @else if $contrast == low {
+    color: #999;
+  } @else {
+    color: $text-color;
+  }
   color: $text-color;
+  font-size: em(18px);
+  background-color: $body-background-color;
+
+  @include large-screens {
+    font-size: 125%;
+  }
 }
 
 h1,
@@ -32,6 +89,21 @@ p {
 
 a {
   color: $link-color;
+  &:hover {
+    //first parameter is the target color second is the amount
+    color: darken($link-color, 15%);
+  }
+}
+
+// no css generated
+%highlight {
+  font-style: italic;
+}
+
+.sub-title {
+  @extend %highlight;
+  @extend .foo !optional;
+  font-size: em(20px);
 }
 
 .warning-button {
@@ -39,9 +111,23 @@ a {
   padding: 8px 12px;
 }
 
+.cta-button {
+  @extend .warning-button;
+  @extend .error;
+  @include rounded;
+  font-weight: bold;
+}
+
+.super-cta-button {
+  @extend .cta-button;
+  font-size: em(20px);
+}
+
 @include apply-to-ie-6 {
   body {
     font-size: 6px;
+    color: rgb(10, 15, 50);
+    background-color: hsl(60, 50%, 100%);
   }
 }
 
@@ -56,6 +142,14 @@ a {
     }
     a {
       color: $menu-item-color;
+      padding: 6px 8px;
+      border-bottom: 1px solid transparentize(#fefefe, 1);
+      transition: border-bottom 0.5s;
+      transition-timing-function: ease-in-out;
+
+      &:hover {
+        border-bottom: 1px solid opacify(#fefefe, 0.5);
+      }
     }
   }
   #logo {
@@ -64,16 +158,36 @@ a {
 
 #main {
   width: $content-width;
+  @include large-screens {
+    width: auto;
+    max-width: $content-width;
+  }
   margin-left: auto;
   margin-right: auto;
+
   #content {
+    float: left;
+    width: 6 * $col;
   }
 
   #sidebar {
+    float: right;
+    width: 2 * $col;
+  }
+
+  li {
+    list-style-type: none;
+    padding: em(16px) em(20px);
+    border-bottom: 1px dashed #999;
+
+    &:hover {
+      background-color: #efefef;
+    }
   }
 }
 
 #footer {
+  clear: both;
   height: $footer-height;
   background-color: $ternary-color;
 }
